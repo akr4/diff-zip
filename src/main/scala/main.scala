@@ -9,12 +9,17 @@ case class DiffResult(
   existsOnlyIn2: List[String],
   differentFiles: List[String]
 )
-
+case class FileDiffResult(
+  zip1: File,
+  zip2: File,
+  diffResult: DiffResult
+)
 object Diff {
-  def diff(zip1: File, zip2: File): DiffResult = {
+  def diff(zip1: File, zip2: File): FileDiffResult = {
     managed(openZipFile(zip1)).acquireAndGet { in1 =>
       managed(openZipFile(zip2)).acquireAndGet { in2 =>
-	diff(new ZipEntries(in1).toList, new ZipEntries(in2).toList)
+	val r = diff(new ZipEntries(in1).toList, new ZipEntries(in2).toList)
+	FileDiffResult(zip1, zip2, r)
       }
     }
   }
@@ -40,20 +45,20 @@ object Diff {
 }
 
 object Main {
-  private def print(diff: DiffResult) {
-    println("Exists only in zip1")
-    println("====================")
-    diff.existsOnlyIn1.foreach(println)
+  private def print(diff: FileDiffResult) {
+    println("Exists only in " + diff.zip1)
+    println("===========================================")
+    diff.diffResult.existsOnlyIn1.foreach(println)
 
     println("")
-    println("Exists only in zip2")
-    println("====================")
-    diff.existsOnlyIn2.foreach(println)
+    println("Exists only in " + diff.zip2)
+    println("===========================================")
+    diff.diffResult.existsOnlyIn2.foreach(println)
 
     println("")
     println("Exists in both but not same")
-    println("================================")
-    diff.differentFiles.foreach(println)
+    println("===========================================")
+    diff.diffResult.differentFiles.foreach(println)
   }
 
   def main(args: Array[String]) {
@@ -69,11 +74,16 @@ case class Args(zip1: File, zip2: File)
 object Args {
   import org.clapper.argot._
 
-  private implicit def toFile(s: String, opt: CommandLineArgument[File]) = new File(s)
-
   def apply(args: Array[String]): Either[ArgsException, Args] = {
     val parser = new ArgotParser("diff-zip")
-    val zip1 = parser.parameter[File]("ZIP1", "zip file 1", false);
+
+    implicit def toFile(s: String, opt: CommandLineArgument[File]) = {
+      val f = new File(s)
+      if (!f.exists) parser.usage(s + " not found.")
+      f
+    }
+
+    val zip1 = parser.parameter[File]("ZIP1", "zip file 1", false)
     val zip2 = parser.parameter[File]("ZIP2", "zip file 2", false)
 
     try {
@@ -85,7 +95,7 @@ object Args {
   }
 }
 
-case class ZipEntry(name: String, digest: String)
+case class ZipEntry(name: String, digest: Array[Byte])
 class ZipEntries(stream: ZipInputStream) extends collection.Traversable[ZipEntry] {
   import java.security.MessageDigest
 
@@ -98,21 +108,14 @@ class ZipEntries(stream: ZipInputStream) extends collection.Traversable[ZipEntry
     }
 
     @annotation.tailrec
-    def makeDigest(d: MessageDigest, stream: ZipInputStream): String = {
+    def makeDigest(d: MessageDigest, stream: ZipInputStream): Array[Byte] = {
       val buf = new Array[Byte](4096)
       val length = stream.read(buf)
       if (length > 0) {
 	d.update(buf, 0, length)
 	makeDigest(d, stream)
       } else {
-	toHashString(d.digest)
-      }
-    }
-
-    def toHashString(bytes: Array[Byte]): String = {
-      bytes.foldLeft("") { (r, b) =>
-	if (b < 0x10) r + "0" + Integer.toHexString(b)
-	else r + Integer.toHexString(b)
+	d.digest
       }
     }
   }
