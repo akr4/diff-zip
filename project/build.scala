@@ -1,5 +1,6 @@
 import sbt._
 import sbt.Keys._
+import com.typesafe.startscript.StartScriptPlugin
 
 object MyBuild extends Build {
 
@@ -58,7 +59,7 @@ object MyBuild extends Build {
           |import scalax.file._
           |import org.scala_tools.time.Imports._
         """.stripMargin
-    )
+    ) ++ StartScriptPlugin.startScriptForClassesSettings
   )
 }
 
