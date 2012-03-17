@@ -25,3 +25,9 @@ Usage
   org/apache/commons/lang/math/LongRange.class
   org/apache/commons/lang/time/FastDateFormat$NumberRule.class
   ...
+
+License
+---------
+Copyright 2012 Akira Ueda
+
+Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
