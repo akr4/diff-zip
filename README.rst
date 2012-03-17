@@ -4,6 +4,7 @@ List different files between two zip files.
 
 Usage
 ------------------------------
+::
 
   $ sbt
   sbt> stage
