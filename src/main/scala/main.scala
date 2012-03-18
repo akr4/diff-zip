@@ -61,17 +61,17 @@ object Diff {
 
 object Main {
   private def print(diff: FileDiffResult) {
-    println("Exists only in " + diff.zip1)
+    println("Files exist only in " + diff.zip1)
     println("===========================================")
     diff.diffResult.existsOnlyIn1.foreach(println)
 
     println("")
-    println("Exists only in " + diff.zip2)
+    println("Files exist only in " + diff.zip2)
     println("===========================================")
     diff.diffResult.existsOnlyIn2.foreach(println)
 
     println("")
-    println("Exists in both but not same")
+    println("Files exist in both but not same")
     println("===========================================")
     diff.diffResult.differentFiles.foreach(println)
   }
