@@ -19,7 +19,7 @@ import com.typesafe.startscript.StartScriptPlugin
 
 object MyBuild extends Build {
 
-  val groupName = "myproject"
+  val groupName = "diff-zip"
 
   def id(name: String) = "%s-%s" format(groupName, name)
 
@@ -38,7 +38,6 @@ object MyBuild extends Build {
 
     val basic = {
       Seq(
-        "org.scala-tools.time" %% "time" % "0.5",
         "org.clapper" %% "argot" % "0.3.8"
       )
     }
@@ -74,7 +73,7 @@ object MyBuild extends Build {
           |import scalax.file._
           |import org.scala_tools.time.Imports._
         """.stripMargin
-    ) ++ StartScriptPlugin.startScriptForClassesSettings
+    ) ++ com.github.retronym.SbtOneJar.oneJarSettings
   )
 }
 

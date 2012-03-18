@@ -1,3 +1,6 @@
-resolvers += Classpaths.typesafeResolver
+resolvers += Resolver.url(
+  "sbt-plugin-releases", 
+  new URL("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases/")
+)(Resolver.ivyStylePatterns)
 
-addSbtPlugin("com.typesafe.startscript" % "xsbt-start-script-plugin" % "0.5.0")
+addSbtPlugin("com.github.retronym" % "sbt-onejar" % "0.7")
