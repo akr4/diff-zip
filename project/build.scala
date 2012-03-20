@@ -15,7 +15,6 @@
  */
 import sbt._
 import sbt.Keys._
-import com.typesafe.startscript.StartScriptPlugin
 
 object MyBuild extends Build {
 
@@ -53,8 +52,8 @@ object MyBuild extends Build {
     val logging = Seq(
       "ch.qos.logback" % "logback-classic" % "0.9.25",
       "org.codehaus.groovy" % "groovy" % "1.8.0",
-      "org.slf4j" % "slf4j-api" % "1.6.2",
-      "org.clapper" %% "grizzled-slf4j" % "0.6.6"
+      "org.slf4j" % "slf4j-api" % "1.6.4",
+      "org.clapper" %% "grizzled-slf4j" % "0.6.8"
     )
 
     val test = Seq(
